@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Imposter Game – Free Indian Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #1a1a2e; --bg2: #16213e;
+      --card: #ffffff; --card-dark: rgba(255,255,255,0.06);
+      --accent: #e94560; --primary: #6c63ff; --primary-dark: #5a52e0;
+      --green: #2ecc71; --green-dark: #27ae60;
+      --text: #1a1a2e; --text-light: #666; --text-white: #ffffff;
+      --border: #e0e0e0; --shadow: 0 4px 20px rgba(0,0,0,0.12);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.18); --radius: 16px;
+    }
+    html, body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, #0d1b2a 100%);
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text-white);
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(circle at 25% 25%, rgba(108,99,255,0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 75% 75%, rgba(233,69,96,0.06) 0%, transparent 50%);
+    }
+    #app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding-bottom: 60px; }
+
+    /* CONTAINER */
+    .container { width: 100%; max-width: 480px; padding: 20px 16px; }
+
+    /* HEADER */
+    .app-header { text-align: center; padding: 36px 16px 16px; width: 100%; max-width: 480px; }
+    .app-header h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg,#fff,rgba(255,255,255,0.7)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; line-height:1.15; }
+    .app-header .tagline { font-size: 0.9rem; color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+    /* CARDS */
+    .card { background: var(--card); border-radius: var(--radius); padding: 18px; color: var(--text); box-shadow: var(--shadow); width: 100%; margin-bottom: 12px; }
+    .card-dark { background: var(--card-dark); border: 1px solid rgba(255,255,255,0.10); border-radius: var(--radius); padding: 18px; color: var(--text-white); width: 100%; margin-bottom: 12px; backdrop-filter: blur(8px); }
+    .card-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: var(--text-light); margin-bottom: 14px; }
+    .card-dark .card-title { color: rgba(255,255,255,0.4); }
+
+    /* BUTTONS */
+    .btn { display:flex; align-items:center; justify-content:center; gap:8px; padding:14px 24px; border-radius:999px; font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer; border:none; transition:transform .12s,box-shadow .12s,opacity .12s; width:100%; -webkit-tap-highlight-color:transparent; }
+    .btn:active { transform:scale(0.97); opacity:.9; }
+    .btn-primary { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; box-shadow:0 4px 18px rgba(108,99,255,0.4); }
+    .btn-green   { background:linear-gradient(135deg,var(--green),var(--green-dark)); color:#fff; box-shadow:0 4px 18px rgba(46,204,113,0.35); }
+    .btn-red     { background:linear-gradient(135deg,var(--accent),#c0392b); color:#fff; box-shadow:0 4px 18px rgba(233,69,96,0.35); }
+    .btn-ghost   { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.85); border:1.5px solid rgba(255,255,255,0.14); }
+    .btn-ghost:hover { background:rgba(255,255,255,0.13); }
+    .btn-sm { padding:8px 16px; font-size:0.85rem; width:auto; display:inline-flex; }
+
+    /* COUNTER */
+    .counter-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; }
+    .counter-label { font-size:0.95rem; font-weight:600; color:var(--text); }
+    .card-dark .counter-label { color:rgba(255,255,255,0.85); }
+    .counter-controls { display:flex; align-items:center; gap:12px; }
+    .counter-btn { width:36px; height:36px; border-radius:50%; border:none; background:rgba(108,99,255,0.12); color:var(--primary); font-size:1.3rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; -webkit-tap-highlight-color:transparent; }
+    .counter-btn:hover { background:rgba(108,99,255,0.22); }
+    .counter-val { font-size:1.5rem; font-weight:800; color:var(--primary); min-width:32px; text-align:center; }
+
+    /* DIFFICULTY CHECKBOXES */
+    .diff-check-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .diff-check-btn {
+      flex:1; min-width:70px; padding:10px 8px; border-radius:12px; border:2px solid transparent;
+      font-family:inherit; font-size:0.88rem; font-weight:700; cursor:pointer;
+      transition:all .18s; text-align:center; -webkit-tap-highlight-color:transparent;
+      background:#f0f0f5; color:#888;
+    }
+    .diff-check-btn.selected { border-color:var(--primary); background:rgba(108,99,255,0.12); color:var(--primary); }
+    .diff-check-btn.easy.selected   { border-color:#2ecc71; background:rgba(46,204,113,0.12); color:#2ecc71; }
+    .diff-check-btn.medium.selected { border-color:#f5a623; background:rgba(245,166,35,0.12); color:#f5a623; }
+    .diff-check-btn.hard.selected   { border-color:#e94560; background:rgba(233,69,96,0.12); color:#e94560; }
+    .diff-check-warn { font-size:0.78rem; color:#e94560; margin-top:8px; display:none; }
+    .diff-check-warn.show { display:block; }
+
+    /* TOGGLE SWITCH */
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:6px 0; }
+    .toggle-label-wrap { display:flex; flex-direction:column; }
+    .toggle-label { font-size:0.95rem; font-weight:600; color:var(--text); }
+    .toggle-sub   { font-size:0.78rem; color:var(--text-light); margin-top:2px; }
+    .card-dark .toggle-label { color:rgba(255,255,255,0.85); }
+    .card-dark .toggle-sub   { color:rgba(255,255,255,0.4); }
+    .toggle { position:relative; width:46px; height:26px; flex-shrink:0; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; cursor:pointer; inset:0; background:#ccc; border-radius:999px; transition:.25s; }
+    .toggle-slider::before { content:''; position:absolute; height:20px; width:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.25s; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
+    .toggle input:checked + .toggle-slider { background:var(--primary); }
+    .toggle input:checked + .toggle-slider::before { transform:translateX(20px); }
+
+    /* CATEGORY PILLS */
+    .sel-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .link-btn { background:none; border:none; color:var(--primary); font-family:inherit; font-size:0.82rem; font-weight:700; cursor:pointer; padding:0; }
+    .pill-grid { display:flex; flex-wrap:wrap; gap:7px; max-height:200px; overflow-y:auto; padding-bottom:2px; }
+    .pill-grid::-webkit-scrollbar { width:3px; }
+    .pill-grid::-webkit-scrollbar-thumb { background:rgba(108,99,255,0.3); border-radius:99px; }
+    .pill { padding:6px 13px; border-radius:999px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all .15s; border:1.5px solid transparent; -webkit-tap-highlight-color:transparent; font-family:inherit; }
+    .pill-off { background:#f0f0f5; color:#666; border-color:#e0e0e0; }
+    .pill-on  { background:rgba(108,99,255,0.12); color:var(--primary); border-color:var(--primary); }
+
+    /* DIVIDER */
+    .divider { width:100%; height:1px; background:var(--border); margin:12px 0; }
+    .divider-dark { width:100%; height:1px; background:rgba(255,255,255,0.08); margin:12px 0; }
+
+    /* WORD REVEAL CARD */
+    .word-reveal-card { background:linear-gradient(145deg,#1e1b4b,#312e81); border-radius:22px; padding:46px 28px 36px; text-align:center; border:2px solid rgba(255,255,255,0.1); cursor:pointer; transition:transform .2s; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:var(--shadow-lg); -webkit-tap-highlight-color:transparent; }
+    .word-reveal-card:active { transform:scale(0.98); }
+    .word-reveal-card.imposter-card { background:linear-gradient(145deg,#1c0010,#3d0020); border-color:rgba(233,69,96,0.3); }
+    .word-big { font-size:2.8rem; font-weight:800; color:#fff; line-height:1.1; letter-spacing:-0.5px; }
+    .word-cat-badge { display:inline-block; background:rgba(108,99,255,0.25); border:1px solid rgba(108,99,255,0.4); color:#a5b4fc; border-radius:999px; padding:4px 14px; font-size:0.75rem; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:14px; }
+    .word-cat-badge.hint-show { background:rgba(245,166,35,0.18); border-color:rgba(245,166,35,0.4); color:#fbbf24; }
+    .word-imposter { font-size:2.8rem; font-weight:800; color:var(--accent); line-height:1.1; }
+    .tap-hint { font-size:0.82rem; color:rgba(255,255,255,0.35); margin-top:18px; }
+
+    /* PLAYER BADGE */
+    .player-badge { display:inline-flex; align-items:center; gap:7px; background:rgba(108,99,255,0.15); border:1.5px solid rgba(108,99,255,0.35); color:#a5b4fc; border-radius:999px; padding:6px 18px; font-size:0.9rem; font-weight:700; }
+
+    /* PROGRESS DOTS */
+    .progress-dots { display:flex; gap:7px; justify-content:center; flex-wrap:wrap; }
+    .dot { width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,0.15); transition:all .25s; }
+    .dot-done   { background:var(--green); }
+    .dot-active { background:var(--primary); transform:scale(1.4); box-shadow:0 0 8px rgba(108,99,255,0.6); }
+
+    /* STATS */
+    .flex-row { display:flex; gap:10px; width:100%; }
+    .stat-box { flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:12px 8px; text-align:center; }
+    .stat-val { font-size:1.4rem; font-weight:800; color:#fff; }
+    .stat-lbl { font-size:0.68rem; color:rgba(255,255,255,0.45); margin-top:3px; }
+
+    /* HOW TO PLAY */
+    .how-list { list-style:none; padding:0; counter-reset:step; }
+    .how-list li { padding:9px 0 9px 38px; position:relative; font-size:0.88rem; line-height:1.6; color:rgba(255,255,255,0.78); counter-increment:step; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .how-list li:last-child { border-bottom:none; }
+    .how-list li::before { content:counter(step); position:absolute; left:0; top:9px; width:24px; height:24px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; color:#fff; }
+
+    /* RESULT */
+    .result-word-big { font-size:3rem; font-weight:800; color:#fff; text-align:center; line-height:1.1; letter-spacing:-1px; }
+    .emoji-big { font-size:3.5rem; display:block; text-align:center; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes popIn  { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
+    .anim-in { animation:fadeUp .32s ease forwards; }
+    .pop-in  { animation:popIn .4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+    .mt-8{margin-top:8px} .mt-10{margin-top:10px} .mt-12{margin-top:12px}
+    .footer-note { text-align:center; font-size:0.78rem; color:rgba(255,255,255,0.22); padding:16px; }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ================================================================
+   WORD DATABASE — original words kept, Indian items added 🇮🇳
+================================================================ */
+const WORDS = [
+  /* ── FOOD ── */
+  {c:"Food",d:"Easy",w:"Pizza"},{c:"Food",d:"Easy",w:"Apple"},{c:"Food",d:"Easy",w:"Bread"},
+  {c:"Food",d:"Easy",w:"Cake"},{c:"Food",d:"Easy",w:"Ice Cream"},{c:"Food",d:"Easy",w:"Banana"},
+  {c:"Food",d:"Easy",w:"Sandwich"},{c:"Food",d:"Easy",w:"Milk"},{c:"Food",d:"Easy",w:"Cookie"},
+  {c:"Food",d:"Easy",w:"Cheese"},{c:"Food",d:"Easy",w:"Orange"},{c:"Food",d:"Easy",w:"Grapes"},
+  {c:"Food",d:"Easy",w:"Yogurt"},{c:"Food",d:"Easy",w:"Cereal"},{c:"Food",d:"Easy",w:"Pancake"},
+  {c:"Food",d:"Easy",w:"Muffin"},{c:"Food",d:"Easy",w:"Hot Dog"},{c:"Food",d:"Easy",w:"Popcorn"},
+  {c:"Food",d:"Easy",w:"Salad"},{c:"Food",d:"Easy",w:"Soup"},{c:"Food",d:"Easy",w:"Rice"},
+  {c:"Food",d:"Easy",w:"Noodles"},{c:"Food",d:"Easy",w:"Taco"},{c:"Food",d:"Easy",w:"Carrot"},
+  {c:"Food",d:"Easy",w:"Egg"},{c:"Food",d:"Easy",w:"Butter"},{c:"Food",d:"Easy",w:"Donut"},
+  {c:"Food",d:"Easy",w:"Waffle"},{c:"Food",d:"Easy",w:"Tea"},{c:"Food",d:"Easy",w:"Coffee"},
+  {c:"Food",d:"Easy",w:"Chocolate"},{c:"Food",d:"Easy",w:"Cheeseburger"},
+  /* Indian Easy */
+  {c:"Food",d:"Easy",w:"Samosa"},{c:"Food",d:"Easy",w:"Dosa"},{c:"Food",d:"Easy",w:"Idli"},
+  {c:"Food",d:"Easy",w:"Biryani"},{c:"Food",d:"Easy",w:"Roti"},{c:"Food",d:"Easy",w:"Chai"},
+  {c:"Food",d:"Easy",w:"Lassi"},{c:"Food",d:"Easy",w:"Ladoo"},{c:"Food",d:"Easy",w:"Jalebi"},
+  {c:"Food",d:"Easy",w:"Pakora"},
+  /* Medium */
+  {c:"Food",d:"Medium",w:"Spaghetti"},{c:"Food",d:"Medium",w:"Hamburger"},{c:"Food",d:"Medium",w:"Sausage"},
+  {c:"Food",d:"Medium",w:"Omelet"},{c:"Food",d:"Medium",w:"Smoothie"},{c:"Food",d:"Medium",w:"Burrito"},
+  {c:"Food",d:"Medium",w:"Quesadilla"},{c:"Food",d:"Medium",w:"Hummus"},{c:"Food",d:"Medium",w:"Guacamole"},
+  {c:"Food",d:"Medium",w:"Sushi"},{c:"Food",d:"Medium",w:"Ravioli"},{c:"Food",d:"Medium",w:"Croissant"},
+  {c:"Food",d:"Medium",w:"Brownie"},{c:"Food",d:"Medium",w:"Kebab"},{c:"Food",d:"Medium",w:"Falafel"},
+  {c:"Food",d:"Medium",w:"Tofu"},{c:"Food",d:"Medium",w:"Paneer"},{c:"Food",d:"Medium",w:"Fried Rice"},
+  {c:"Food",d:"Medium",w:"Curry"},{c:"Food",d:"Medium",w:"Dumpling"},{c:"Food",d:"Medium",w:"Kimchi"},
+  {c:"Food",d:"Medium",w:"Bibimbap"},{c:"Food",d:"Medium",w:"Lasagna"},{c:"Food",d:"Medium",w:"Chili"},
+  {c:"Food",d:"Medium",w:"Pho"},{c:"Food",d:"Medium",w:"Ramen"},{c:"Food",d:"Medium",w:"Udon"},
+  {c:"Food",d:"Medium",w:"Tapas"},{c:"Food",d:"Medium",w:"Spring Roll"},
+  /* Indian Medium */
+  {c:"Food",d:"Medium",w:"Chole Bhature"},{c:"Food",d:"Medium",w:"Pav Bhaji"},
+  {c:"Food",d:"Medium",w:"Rajma Chawal"},{c:"Food",d:"Medium",w:"Kheer"},
+  {c:"Food",d:"Medium",w:"Halwa"},{c:"Food",d:"Medium",w:"Paratha"},
+  {c:"Food",d:"Medium",w:"Dhokla"},{c:"Food",d:"Medium",w:"Sambhar"},
+  /* Hard */
+  {c:"Food",d:"Hard",w:"Pomegranate"},{c:"Food",d:"Hard",w:"Pistachio"},
+  {c:"Food",d:"Hard",w:"Artichoke"},{c:"Food",d:"Hard",w:"Prosciutto"},
+  {c:"Food",d:"Hard",w:"Tahini"},{c:"Food",d:"Hard",w:"Baba Ganoush"},
+  {c:"Food",d:"Hard",w:"Sashimi"},{c:"Food",d:"Hard",w:"Tamarind"},
+  {c:"Food",d:"Hard",w:"Tiramisu"},{c:"Food",d:"Hard",w:"Crème Brûlée"},
+  {c:"Food",d:"Hard",w:"Wasabi"},{c:"Food",d:"Hard",w:"Aioli"},
+  /* Indian Hard */
+  {c:"Food",d:"Hard",w:"Shrikhand"},{c:"Food",d:"Hard",w:"Undhiyu"},
+  {c:"Food",d:"Hard",w:"Bebinca"},{c:"Food",d:"Hard",w:"Rosogolla"},
+  {c:"Food",d:"Hard",w:"Payasam"},
+
+  /* ── ANIMALS ── */
+  {c:"Animals",d:"Easy",w:"Dog"},{c:"Animals",d:"Easy",w:"Cat"},{c:"Animals",d:"Easy",w:"Cow"},
+  {c:"Animals",d:"Easy",w:"Fish"},{c:"Animals",d:"Easy",w:"Horse"},{c:"Animals",d:"Easy",w:"Duck"},
+  {c:"Animals",d:"Easy",w:"Bird"},{c:"Animals",d:"Easy",w:"Pig"},{c:"Animals",d:"Easy",w:"Rabbit"},
+  {c:"Animals",d:"Easy",w:"Lion"},{c:"Animals",d:"Easy",w:"Tiger"},{c:"Animals",d:"Easy",w:"Bear"},
+  {c:"Animals",d:"Easy",w:"Sheep"},{c:"Animals",d:"Easy",w:"Chicken"},{c:"Animals",d:"Easy",w:"Frog"},
+  {c:"Animals",d:"Easy",w:"Bee"},{c:"Animals",d:"Easy",w:"Ant"},{c:"Animals",d:"Easy",w:"Fox"},
+  {c:"Animals",d:"Easy",w:"Deer"},{c:"Animals",d:"Easy",w:"Elephant"},
+  {c:"Animals",d:"Easy",w:"Monkey"},{c:"Animals",d:"Easy",w:"Peacock"},{c:"Animals",d:"Easy",w:"Cobra"},
+  {c:"Animals",d:"Easy",w:"Camel"},
+  {c:"Animals",d:"Medium",w:"Dolphin"},{c:"Animals",d:"Medium",w:"Penguin"},
+  {c:"Animals",d:"Medium",w:"Panda"},{c:"Animals",d:"Medium",w:"Kangaroo"},
+  {c:"Animals",d:"Medium",w:"Giraffe"},{c:"Animals",d:"Medium",w:"Zebra"},
+  {c:"Animals",d:"Medium",w:"Cheetah"},{c:"Animals",d:"Medium",w:"Crocodile"},
+  {c:"Animals",d:"Medium",w:"Flamingo"},{c:"Animals",d:"Medium",w:"Octopus"},
+  {c:"Animals",d:"Medium",w:"Jellyfish"},{c:"Animals",d:"Medium",w:"Seahorse"},
+  {c:"Animals",d:"Medium",w:"Indian Rhinoceros"},{c:"Animals",d:"Medium",w:"Snow Leopard"},
+  {c:"Animals",d:"Medium",w:"Sloth Bear"},{c:"Animals",d:"Medium",w:"Nilgai"},
+  {c:"Animals",d:"Hard",w:"Axolotl"},{c:"Animals",d:"Hard",w:"Platypus"},
+  {c:"Animals",d:"Hard",w:"Tardigrade"},{c:"Animals",d:"Hard",w:"Gharial"},
+  {c:"Animals",d:"Hard",w:"Gangetic Dolphin"},{c:"Animals",d:"Hard",w:"Great Indian Bustard"},
+
+  /* ── COLORS & SHAPES ── */
+  {c:"Colors & Shapes",d:"Easy",w:"Red"},{c:"Colors & Shapes",d:"Easy",w:"Blue"},
+  {c:"Colors & Shapes",d:"Easy",w:"Green"},{c:"Colors & Shapes",d:"Easy",w:"Yellow"},
+  {c:"Colors & Shapes",d:"Easy",w:"Purple"},{c:"Colors & Shapes",d:"Easy",w:"Pink"},
+  {c:"Colors & Shapes",d:"Easy",w:"Circle"},{c:"Colors & Shapes",d:"Easy",w:"Square"},
+  {c:"Colors & Shapes",d:"Easy",w:"Triangle"},{c:"Colors & Shapes",d:"Easy",w:"Star"},
+  {c:"Colors & Shapes",d:"Easy",w:"Heart"},{c:"Colors & Shapes",d:"Easy",w:"Rainbow"},
+  {c:"Colors & Shapes",d:"Medium",w:"Hexagon"},{c:"Colors & Shapes",d:"Medium",w:"Oval"},
+  {c:"Colors & Shapes",d:"Medium",w:"Indigo"},{c:"Colors & Shapes",d:"Medium",w:"Magenta"},
+  {c:"Colors & Shapes",d:"Medium",w:"Turquoise"},{c:"Colors & Shapes",d:"Medium",w:"Maroon"},
+  {c:"Colors & Shapes",d:"Hard",w:"Octagon"},{c:"Colors & Shapes",d:"Hard",w:"Rhombus"},
+  {c:"Colors & Shapes",d:"Hard",w:"Vermillion"},{c:"Colors & Shapes",d:"Hard",w:"Cerulean"},
+
+  /* ── EMOTIONS ── */
+  {c:"Emotions & Feelings",d:"Easy",w:"Happy"},{c:"Emotions & Feelings",d:"Easy",w:"Sad"},
+  {c:"Emotions & Feelings",d:"Easy",w:"Angry"},{c:"Emotions & Feelings",d:"Easy",w:"Scared"},
+  {c:"Emotions & Feelings",d:"Easy",w:"Excited"},{c:"Emotions & Feelings",d:"Easy",w:"Tired"},
+  {c:"Emotions & Feelings",d:"Easy",w:"Bored"},{c:"Emotions & Feelings",d:"Easy",w:"Shy"},
+  {c:"Emotions & Feelings",d:"Easy",w:"Proud"},{c:"Emotions & Feelings",d:"Easy",w:"Confused"},
+  {c:"Emotions & Feelings",d:"Easy",w:"Brave"},{c:"Emotions & Feelings",d:"Easy",w:"Calm"},
+  {c:"Emotions & Feelings",d:"Easy",w:"Lonely"},{c:"Emotions & Feelings",d:"Easy",w:"Jealous"},
+  {c:"Emotions & Feelings",d:"Easy",w:"Nervous"},{c:"Emotions & Feelings",d:"Easy",w:"Curious"},
+  {c:"Emotions & Feelings",d:"Easy",w:"Hopeful"},{c:"Emotions & Feelings",d:"Easy",w:"Cheerful"},
+  {c:"Emotions & Feelings",d:"Medium",w:"Anxious"},{c:"Emotions & Feelings",d:"Medium",w:"Relieved"},
+  {c:"Emotions & Feelings",d:"Medium",w:"Frustrated"},{c:"Emotions & Feelings",d:"Medium",w:"Motivated"},
+  {c:"Emotions & Feelings",d:"Medium",w:"Overwhelmed"},{c:"Emotions & Feelings",d:"Medium",w:"Optimistic"},
+  {c:"Emotions & Feelings",d:"Medium",w:"Pessimistic"},{c:"Emotions & Feelings",d:"Medium",w:"Skeptical"},
+  {c:"Emotions & Feelings",d:"Hard",w:"Melancholy"},{c:"Emotions & Feelings",d:"Hard",w:"Nostalgia"},
+  {c:"Emotions & Feelings",d:"Hard",w:"Serenity"},{c:"Emotions & Feelings",d:"Hard",w:"Ambivalent"},
+
+  /* ── FAMOUS PEOPLE ── */
+  {c:"Famous People & Characters",d:"Easy",w:"Albert Einstein"},
+  {c:"Famous People & Characters",d:"Easy",w:"Marie Curie"},
+  {c:"Famous People & Characters",d:"Easy",w:"Leonardo da Vinci"},
+  {c:"Famous People & Characters",d:"Easy",w:"Cleopatra"},
+  {c:"Famous People & Characters",d:"Easy",w:"Martin Luther King Jr."},
+  {c:"Famous People & Characters",d:"Easy",w:"Neil Armstrong"},
+  {c:"Famous People & Characters",d:"Easy",w:"Walt Disney"},
+  {c:"Famous People & Characters",d:"Easy",w:"Steve Jobs"},
+  {c:"Famous People & Characters",d:"Easy",w:"Elon Musk"},
+  /* Indian Easy */
+  {c:"Famous People & Characters",d:"Easy",w:"APJ Abdul Kalam"},
+  {c:"Famous People & Characters",d:"Easy",w:"Sachin Tendulkar"},
+  {c:"Famous People & Characters",d:"Easy",w:"Mahatma Gandhi"},
+  {c:"Famous People & Characters",d:"Easy",w:"MS Dhoni"},
+  {c:"Famous People & Characters",d:"Easy",w:"Virat Kohli"},
+  {c:"Famous People & Characters",d:"Easy",w:"AR Rahman"},
+  {c:"Famous People & Characters",d:"Easy",w:"Amitabh Bachchan"},
+  {c:"Famous People & Characters",d:"Easy",w:"Neeraj Chopra"},
+  {c:"Famous People & Characters",d:"Easy",w:"PV Sindhu"},
+  {c:"Famous People & Characters",d:"Medium",w:"Frida Kahlo"},
+  {c:"Famous People & Characters",d:"Medium",w:"Michelangelo"},
+  {c:"Famous People & Characters",d:"Medium",w:"Lionel Messi"},
+  {c:"Famous People & Characters",d:"Medium",w:"Cristiano Ronaldo"},
+  {c:"Famous People & Characters",d:"Medium",w:"LeBron James"},
+  /* Indian Medium */
+  {c:"Famous People & Characters",d:"Medium",w:"Subhas Chandra Bose"},
+  {c:"Famous People & Characters",d:"Medium",w:"BR Ambedkar"},
+  {c:"Famous People & Characters",d:"Medium",w:"Swami Vivekananda"},
+  {c:"Famous People & Characters",d:"Medium",w:"Bhagat Singh"},
+  {c:"Famous People & Characters",d:"Medium",w:"Sardar Patel"},
+  {c:"Famous People & Characters",d:"Hard",w:"Alan Turing"},
+  {c:"Famous People & Characters",d:"Hard",w:"Rosalind Franklin"},
+  /* Indian Hard */
+  {c:"Famous People & Characters",d:"Hard",w:"Srinivasa Ramanujan"},
+  {c:"Famous People & Characters",d:"Hard",w:"CV Raman"},
+  {c:"Famous People & Characters",d:"Hard",w:"Rabindranath Tagore"},
+  {c:"Famous People & Characters",d:"Hard",w:"Satyajit Ray"},
+
+  /* ── FANTASY & MYTHICAL ── */
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Dragon"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Unicorn"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Mermaid"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Wizard"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Fairy"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Vampire"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Werewolf"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Ghost"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Witch"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Phoenix"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Genie"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Goblin"},
+  /* Indian Easy */
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Naga"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Rakshasa"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Gandharva"},
+  {c:"Fantasy & Mythical Creatures",d:"Easy",w:"Yaksha"},
+  {c:"Fantasy & Mythical Creatures",d:"Medium",w:"Manticore"},
+  {c:"Fantasy & Mythical Creatures",d:"Medium",w:"Wyvern"},
+  {c:"Fantasy & Mythical Creatures",d:"Medium",w:"Medusa"},
+  {c:"Fantasy & Mythical Creatures",d:"Medium",w:"Kraken"},
+  {c:"Fantasy & Mythical Creatures",d:"Medium",w:"Sphinx"},
+  {c:"Fantasy & Mythical Creatures",d:"Medium",w:"Kitsune"},
+  /* Indian Medium */
+  {c:"Fantasy & Mythical Creatures",d:"Medium",w:"Apsara"},
+  {c:"Fantasy & Mythical Creatures",d:"Medium",w:"Vetala"},
+  {c:"Fantasy & Mythical Creatures",d:"Medium",w:"Pishacha"},
+  {c:"Fantasy & Mythical Creatures",d:"Hard",w:"Jormungandr"},
+  {c:"Fantasy & Mythical Creatures",d:"Hard",w:"Fenrir"},
+  {c:"Fantasy & Mythical Creatures",d:"Hard",w:"Simurgh"},
+  /* Indian Hard */
+  {c:"Fantasy & Mythical Creatures",d:"Hard",w:"Narasimha"},
+  {c:"Fantasy & Mythical Creatures",d:"Hard",w:"Jatayu"},
+
+  /* ── FEARS & PHOBIAS ── */
+  {c:"Fears & Phobias",d:"Easy",w:"Spiders"},{c:"Fears & Phobias",d:"Easy",w:"Snakes"},
+  {c:"Fears & Phobias",d:"Easy",w:"Heights"},{c:"Fears & Phobias",d:"Easy",w:"Dark"},
+  {c:"Fears & Phobias",d:"Easy",w:"Water"},{c:"Fears & Phobias",d:"Easy",w:"Deep Water"},
+  {c:"Fears & Phobias",d:"Easy",w:"Storms"},{c:"Fears & Phobias",d:"Easy",w:"Small Spaces"},
+  {c:"Fears & Phobias",d:"Easy",w:"Public Speaking"},{c:"Fears & Phobias",d:"Easy",w:"Monsters"},
+  {c:"Fears & Phobias",d:"Easy",w:"Loud Noises"},{c:"Fears & Phobias",d:"Easy",w:"Bugs"},
+  {c:"Fears & Phobias",d:"Easy",w:"Roller Coasters"},{c:"Fears & Phobias",d:"Easy",w:"Getting Shots"},
+  {c:"Fears & Phobias",d:"Medium",w:"Thunderstorms"},{c:"Fears & Phobias",d:"Medium",w:"Sharks"},
+  {c:"Fears & Phobias",d:"Medium",w:"Earthquakes"},{c:"Fears & Phobias",d:"Medium",w:"Falling"},
+  {c:"Fears & Phobias",d:"Medium",w:"Being Late"},{c:"Fears & Phobias",d:"Medium",w:"Hornets"},
+  {c:"Fears & Phobias",d:"Hard",w:"Claustrophobia"},{c:"Fears & Phobias",d:"Hard",w:"Acrophobia"},
+  {c:"Fears & Phobias",d:"Hard",w:"Arachnophobia"},{c:"Fears & Phobias",d:"Hard",w:"Nyctophobia"},
+  {c:"Fears & Phobias",d:"Hard",w:"Trypanophobia"},{c:"Fears & Phobias",d:"Hard",w:"Glossophobia"},
+
+  /* ── GEOGRAPHY ── */
+  {c:"Geography",d:"Easy",w:"India"},{c:"Geography",d:"Easy",w:"China"},
+  {c:"Geography",d:"Easy",w:"USA"},{c:"Geography",d:"Easy",w:"Japan"},
+  {c:"Geography",d:"Easy",w:"Brazil"},{c:"Geography",d:"Easy",w:"France"},
+  {c:"Geography",d:"Easy",w:"Australia"},{c:"Geography",d:"Easy",w:"Canada"},
+  {c:"Geography",d:"Easy",w:"Egypt"},
+  /* Indian Easy */
+  {c:"Geography",d:"Easy",w:"Mumbai"},{c:"Geography",d:"Easy",w:"Delhi"},
+  {c:"Geography",d:"Easy",w:"Kolkata"},{c:"Geography",d:"Easy",w:"Chennai"},
+  {c:"Geography",d:"Easy",w:"Bangalore"},{c:"Geography",d:"Easy",w:"Goa"},
+  {c:"Geography",d:"Easy",w:"Jaipur"},{c:"Geography",d:"Easy",w:"Varanasi"},
+  {c:"Geography",d:"Medium",w:"New Zealand"},{c:"Geography",d:"Medium",w:"Argentina"},
+  {c:"Geography",d:"Medium",w:"South Africa"},{c:"Geography",d:"Medium",w:"Indonesia"},
+  {c:"Geography",d:"Medium",w:"Pakistan"},{c:"Geography",d:"Medium",w:"Bangladesh"},
+  {c:"Geography",d:"Medium",w:"Sri Lanka"},
+  {c:"Geography",d:"Hard",w:"Kazakhstan"},{c:"Geography",d:"Hard",w:"Uzbekistan"},
+  {c:"Geography",d:"Hard",w:"Azerbaijan"},{c:"Geography",d:"Hard",w:"Tajikistan"},
+
+  /* ── HOLIDAYS & CELEBRATIONS ── */
+  {c:"Holidays & Celebrations",d:"Easy",w:"Birthday"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Christmas"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"New Year"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Halloween"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Valentine's Day"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Diwali"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Holi"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Eid"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Navratri"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Ganesh Chaturthi"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Onam"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Rakhi"},
+  {c:"Holidays & Celebrations",d:"Easy",w:"Independence Day"},
+  {c:"Holidays & Celebrations",d:"Medium",w:"Baisakhi"},
+  {c:"Holidays & Celebrations",d:"Medium",w:"Durga Puja"},
+  {c:"Holidays & Celebrations",d:"Medium",w:"Janmashtami"},
+  {c:"Holidays & Celebrations",d:"Medium",w:"Makar Sankranti"},
+  {c:"Holidays & Celebrations",d:"Medium",w:"Chhath Puja"},
+  {c:"Holidays & Celebrations",d:"Medium",w:"Bihu"},
+  {c:"Holidays & Celebrations",d:"Hard",w:"Thrissur Pooram"},
+  {c:"Holidays & Celebrations",d:"Hard",w:"Hornbill Festival"},
+
+  /* ── JOBS ── */
+  {c:"Jobs & Professions",d:"Easy",w:"Doctor"},
+  {c:"Jobs & Professions",d:"Easy",w:"Teacher"},
+  {c:"Jobs & Professions",d:"Easy",w:"Firefighter"},
+  {c:"Jobs & Professions",d:"Easy",w:"Police Officer"},
+  {c:"Jobs & Professions",d:"Easy",w:"Singer"},
+  {c:"Jobs & Professions",d:"Easy",w:"Athlete"},
+  {c:"Jobs & Professions",d:"Easy",w:"Pilot"},
+  {c:"Jobs & Professions",d:"Easy",w:"Chef"},
+  {c:"Jobs & Professions",d:"Easy",w:"Engineer"},
+  {c:"Jobs & Professions",d:"Easy",w:"Lawyer"},
+  {c:"Jobs & Professions",d:"Easy",w:"Dancer"},
+  {c:"Jobs & Professions",d:"Easy",w:"Scientist"},
+  {c:"Jobs & Professions",d:"Easy",w:"Actor"},
+  {c:"Jobs & Professions",d:"Easy",w:"Author"},
+  {c:"Jobs & Professions",d:"Easy",w:"Farmer"},
+  {c:"Jobs & Professions",d:"Easy",w:"Barber"},
+  {c:"Jobs & Professions",d:"Easy",w:"Carpenter"},
+  {c:"Jobs & Professions",d:"Easy",w:"Soldier"},
+  {c:"Jobs & Professions",d:"Medium",w:"Architect"},
+  {c:"Jobs & Professions",d:"Medium",w:"Journalist"},
+  {c:"Jobs & Professions",d:"Medium",w:"Programmer"},
+  {c:"Jobs & Professions",d:"Medium",w:"Archaeologist"},
+  {c:"Jobs & Professions",d:"Medium",w:"Meteorologist"},
+  {c:"Jobs & Professions",d:"Medium",w:"Zookeeper"},
+  {c:"Jobs & Professions",d:"Medium",w:"Tailor"},
+  {c:"Jobs & Professions",d:"Hard",w:"Diplomat"},
+  {c:"Jobs & Professions",d:"Hard",w:"Cryptographer"},
+  {c:"Jobs & Professions",d:"Hard",w:"Epidemiologist"},
+  {c:"Jobs & Professions",d:"Hard",w:"Paleontologist"},
+  {c:"Jobs & Professions",d:"Hard",w:"Cartographer"},
+
+  /* ── MOVIES & TV ── */
+  {c:"Movies & TV",d:"Easy",w:"Frozen"},{c:"Movies & TV",d:"Easy",w:"Toy Story"},
+  {c:"Movies & TV",d:"Easy",w:"Spider-Man"},{c:"Movies & TV",d:"Easy",w:"Batman"},
+  {c:"Movies & TV",d:"Easy",w:"Harry Potter"},{c:"Movies & TV",d:"Easy",w:"Star Wars"},
+  {c:"Movies & TV",d:"Easy",w:"Finding Nemo"},{c:"Movies & TV",d:"Easy",w:"The Lion King"},
+  {c:"Movies & TV",d:"Easy",w:"Aladdin"},{c:"Movies & TV",d:"Easy",w:"Shrek"},
+  {c:"Movies & TV",d:"Easy",w:"SpongeBob"},{c:"Movies & TV",d:"Easy",w:"Moana"},
+  {c:"Movies & TV",d:"Easy",w:"Kung Fu Panda"},{c:"Movies & TV",d:"Easy",w:"Minions"},
+  /* Indian Easy */
+  {c:"Movies & TV",d:"Easy",w:"Sholay"},{c:"Movies & TV",d:"Easy",w:"3 Idiots"},
+  {c:"Movies & TV",d:"Easy",w:"Dangal"},{c:"Movies & TV",d:"Easy",w:"Baahubali"},
+  {c:"Movies & TV",d:"Easy",w:"RRR"},{c:"Movies & TV",d:"Easy",w:"Panchayat"},
+  {c:"Movies & TV",d:"Easy",w:"Mirzapur"},{c:"Movies & TV",d:"Easy",w:"Doraemon"},
+  {c:"Movies & TV",d:"Easy",w:"Taarak Mehta"},
+  {c:"Movies & TV",d:"Medium",w:"Jurassic Park"},{c:"Movies & TV",d:"Medium",w:"Black Panther"},
+  {c:"Movies & TV",d:"Medium",w:"Home Alone"},{c:"Movies & TV",d:"Medium",w:"Jumanji"},
+  {c:"Movies & TV",d:"Medium",w:"Back to the Future"},
+  /* Indian Medium */
+  {c:"Movies & TV",d:"Medium",w:"Gangs of Wasseypur"},
+  {c:"Movies & TV",d:"Medium",w:"Taare Zameen Par"},
+  {c:"Movies & TV",d:"Medium",w:"Rang De Basanti"},
+  {c:"Movies & TV",d:"Medium",w:"Lagaan"},
+  {c:"Movies & TV",d:"Medium",w:"Sacred Games"},
+  {c:"Movies & TV",d:"Hard",w:"Mughal-E-Azam"},
+  {c:"Movies & TV",d:"Hard",w:"Pather Panchali"},
+  {c:"Movies & TV",d:"Hard",w:"Nayakan"},
+
+  /* ── MUSIC & ENTERTAINMENT ── */
+  {c:"Music & Entertainment",d:"Easy",w:"Guitar"},{c:"Music & Entertainment",d:"Easy",w:"Piano"},
+  {c:"Music & Entertainment",d:"Easy",w:"Drums"},{c:"Music & Entertainment",d:"Easy",w:"Violin"},
+  {c:"Music & Entertainment",d:"Easy",w:"Flute"},{c:"Music & Entertainment",d:"Easy",w:"Microphone"},
+  {c:"Music & Entertainment",d:"Easy",w:"Concert"},{c:"Music & Entertainment",d:"Easy",w:"Karaoke"},
+  /* Indian Easy */
+  {c:"Music & Entertainment",d:"Easy",w:"Tabla"},
+  {c:"Music & Entertainment",d:"Easy",w:"Sitar"},
+  {c:"Music & Entertainment",d:"Easy",w:"Dhol"},
+  {c:"Music & Entertainment",d:"Easy",w:"Harmonium"},
+  {c:"Music & Entertainment",d:"Easy",w:"Dholak"},
+  {c:"Music & Entertainment",d:"Medium",w:"Cello"},{c:"Music & Entertainment",d:"Medium",w:"Saxophone"},
+  {c:"Music & Entertainment",d:"Medium",w:"Accordion"},{c:"Music & Entertainment",d:"Medium",w:"Synthesizer"},
+  /* Indian Medium */
+  {c:"Music & Entertainment",d:"Medium",w:"Shehnai"},
+  {c:"Music & Entertainment",d:"Medium",w:"Veena"},
+  {c:"Music & Entertainment",d:"Medium",w:"Mridangam"},
+  {c:"Music & Entertainment",d:"Medium",w:"Santoor"},
+  {c:"Music & Entertainment",d:"Hard",w:"Theremin"},
+  {c:"Music & Entertainment",d:"Hard",w:"Hurdy-gurdy"},
+  /* Indian Hard */
+  {c:"Music & Entertainment",d:"Hard",w:"Sarod"},
+  {c:"Music & Entertainment",d:"Hard",w:"Rudra Veena"},
+  {c:"Music & Entertainment",d:"Hard",w:"Sarangi"},
+
+  /* ── NATURE & OUTDOORS ── */
+  {c:"Nature & Outdoors",d:"Easy",w:"Tree"},{c:"Nature & Outdoors",d:"Easy",w:"Flower"},
+  {c:"Nature & Outdoors",d:"Easy",w:"River"},{c:"Nature & Outdoors",d:"Easy",w:"Mountain"},
+  {c:"Nature & Outdoors",d:"Easy",w:"Ocean"},{c:"Nature & Outdoors",d:"Easy",w:"Forest"},
+  {c:"Nature & Outdoors",d:"Easy",w:"Desert"},{c:"Nature & Outdoors",d:"Easy",w:"Rain"},
+  {c:"Nature & Outdoors",d:"Easy",w:"Snow"},{c:"Nature & Outdoors",d:"Easy",w:"Waterfall"},
+  {c:"Nature & Outdoors",d:"Easy",w:"Monsoon"},{c:"Nature & Outdoors",d:"Easy",w:"Jungle"},
+  {c:"Nature & Outdoors",d:"Medium",w:"Glacier"},{c:"Nature & Outdoors",d:"Medium",w:"Volcano"},
+  {c:"Nature & Outdoors",d:"Medium",w:"Mangrove"},{c:"Nature & Outdoors",d:"Medium",w:"Tide Pool"},
+  {c:"Nature & Outdoors",d:"Medium",w:"Sundarbans"},{c:"Nature & Outdoors",d:"Medium",w:"Western Ghats"},
+  {c:"Nature & Outdoors",d:"Hard",w:"Tundra"},{c:"Nature & Outdoors",d:"Hard",w:"Estuary"},
+  {c:"Nature & Outdoors",d:"Hard",w:"Rann of Kutch"},
+
+  /* ── OBJECTS & THINGS ── */
+  {c:"Objects & Things",d:"Easy",w:"Chair"},{c:"Objects & Things",d:"Easy",w:"Table"},
+  {c:"Objects & Things",d:"Easy",w:"Door"},{c:"Objects & Things",d:"Easy",w:"Window"},
+  {c:"Objects & Things",d:"Easy",w:"Mirror"},{c:"Objects & Things",d:"Easy",w:"Umbrella"},
+  {c:"Objects & Things",d:"Easy",w:"Clock"},{c:"Objects & Things",d:"Easy",w:"Lamp"},
+  {c:"Objects & Things",d:"Easy",w:"Kite"},
+  /* Indian Easy */
+  {c:"Objects & Things",d:"Easy",w:"Diya"},{c:"Objects & Things",d:"Easy",w:"Thali"},
+  {c:"Objects & Things",d:"Easy",w:"Chappal"},{c:"Objects & Things",d:"Easy",w:"Bindi"},
+  {c:"Objects & Things",d:"Medium",w:"Telescope"},{c:"Objects & Things",d:"Medium",w:"Compass"},
+  {c:"Objects & Things",d:"Medium",w:"Microscope"},
+  /* Indian Medium */
+  {c:"Objects & Things",d:"Medium",w:"Charkha"},{c:"Objects & Things",d:"Medium",w:"Rangoli"},
+  {c:"Objects & Things",d:"Hard",w:"Sextant"},{c:"Objects & Things",d:"Hard",w:"Abacus"},
+
+  /* ── PLACES / LANDMARKS ── */
+  {c:"Places & Landmarks",d:"Easy",w:"Eiffel Tower"},
+  {c:"Places & Landmarks",d:"Easy",w:"Statue of Liberty"},
+  {c:"Places & Landmarks",d:"Easy",w:"Big Ben"},
+  {c:"Places & Landmarks",d:"Easy",w:"Great Wall"},
+  {c:"Places & Landmarks",d:"Easy",w:"Pyramids"},
+  /* Indian Easy */
+  {c:"Places & Landmarks",d:"Easy",w:"Taj Mahal"},
+  {c:"Places & Landmarks",d:"Easy",w:"India Gate"},
+  {c:"Places & Landmarks",d:"Easy",w:"Gateway of India"},
+  {c:"Places & Landmarks",d:"Easy",w:"Red Fort"},
+  {c:"Places & Landmarks",d:"Easy",w:"Qutub Minar"},
+  {c:"Places & Landmarks",d:"Easy",w:"Golden Temple"},
+  {c:"Places & Landmarks",d:"Medium",w:"Colosseum"},
+  {c:"Places & Landmarks",d:"Medium",w:"Machu Picchu"},
+  {c:"Places & Landmarks",d:"Medium",w:"Angkor Wat"},
+  /* Indian Medium */
+  {c:"Places & Landmarks",d:"Medium",w:"Charminar"},
+  {c:"Places & Landmarks",d:"Medium",w:"Hampi"},
+  {c:"Places & Landmarks",d:"Medium",w:"Khajuraho"},
+  {c:"Places & Landmarks",d:"Hard",w:"Stonehenge"},{c:"Places & Landmarks",d:"Hard",w:"Petra"},
+  /* Indian Hard */
+  {c:"Places & Landmarks",d:"Hard",w:"Ellora Caves"},
+  {c:"Places & Landmarks",d:"Hard",w:"Sanchi Stupa"},
+
+  /* ── SCHOOL & LEARNING ── */
+  {c:"School & Learning",d:"Easy",w:"Homework"},{c:"School & Learning",d:"Easy",w:"Teacher"},
+  {c:"School & Learning",d:"Easy",w:"Library"},{c:"School & Learning",d:"Easy",w:"Exam"},
+  {c:"School & Learning",d:"Easy",w:"Pencil"},{c:"School & Learning",d:"Easy",w:"Blackboard"},
+  {c:"School & Learning",d:"Easy",w:"School Bus"},{c:"School & Learning",d:"Easy",w:"Principal"},
+  /* Indian Easy */
+  {c:"School & Learning",d:"Easy",w:"Tiffin"},
+  {c:"School & Learning",d:"Easy",w:"Report Card"},
+  {c:"School & Learning",d:"Easy",w:"Annual Day"},
+  {c:"School & Learning",d:"Easy",w:"Tuition"},
+  {c:"School & Learning",d:"Medium",w:"Science Lab"},
+  {c:"School & Learning",d:"Medium",w:"Project Work"},
+  {c:"School & Learning",d:"Medium",w:"Morning Assembly"},
+  {c:"School & Learning",d:"Medium",w:"Merit Certificate"},
+  {c:"School & Learning",d:"Hard",w:"NCERT"},
+  {c:"School & Learning",d:"Hard",w:"Olympiad"},
+  {c:"School & Learning",d:"Hard",w:"JEE"},
+  {c:"School & Learning",d:"Hard",w:"NEET"},
+
+  /* ── SILLY & RANDOM ── */
+  {c:"Silly & Random",d:"Easy",w:"Nap"},{c:"Silly & Random",d:"Easy",w:"Selfie"},
+  {c:"Silly & Random",d:"Easy",w:"Sneeze"},{c:"Silly & Random",d:"Easy",w:"Hiccup"},
+  {c:"Silly & Random",d:"Easy",w:"Yawn"},{c:"Silly & Random",d:"Easy",w:"Gossip"},
+  {c:"Silly & Random",d:"Easy",w:"Jugaad"},{c:"Silly & Random",d:"Easy",w:"Homework Excuse"},
+  {c:"Silly & Random",d:"Medium",w:"Procrastination"},{c:"Silly & Random",d:"Medium",w:"Overthinking"},
+  {c:"Silly & Random",d:"Medium",w:"Ghosting"},{c:"Silly & Random",d:"Hard",w:"Existential Crisis"},
+
+  /* ── SPORTS & GAMES ── */
+  {c:"Sports & Games",d:"Easy",w:"Cricket"},{c:"Sports & Games",d:"Easy",w:"Football"},
+  {c:"Sports & Games",d:"Easy",w:"Basketball"},{c:"Sports & Games",d:"Easy",w:"Tennis"},
+  {c:"Sports & Games",d:"Easy",w:"Hockey"},{c:"Sports & Games",d:"Easy",w:"Badminton"},
+  {c:"Sports & Games",d:"Easy",w:"Swimming"},{c:"Sports & Games",d:"Easy",w:"Volleyball"},
+  {c:"Sports & Games",d:"Easy",w:"Chess"},{c:"Sports & Games",d:"Easy",w:"Cycling"},
+  {c:"Sports & Games",d:"Easy",w:"Skateboarding"},{c:"Sports & Games",d:"Easy",w:"Marbles"},
+  /* Indian Easy */
+  {c:"Sports & Games",d:"Easy",w:"Kabaddi"},{c:"Sports & Games",d:"Easy",w:"Kho-Kho"},
+  {c:"Sports & Games",d:"Easy",w:"Carrom"},{c:"Sports & Games",d:"Easy",w:"Gilli-Danda"},
+  {c:"Sports & Games",d:"Easy",w:"Ludo"},{c:"Sports & Games",d:"Easy",w:"Lagori"},
+  {c:"Sports & Games",d:"Medium",w:"Archery"},{c:"Sports & Games",d:"Medium",w:"Rowing"},
+  {c:"Sports & Games",d:"Medium",w:"Javelin"},{c:"Sports & Games",d:"Medium",w:"Billiards"},
+  {c:"Sports & Games",d:"Medium",w:"Snooker"},{c:"Sports & Games",d:"Medium",w:"Squash"},
+  {c:"Sports & Games",d:"Medium",w:"Polo"},{c:"Sports & Games",d:"Medium",w:"Water Polo"},
+  /* Indian Medium */
+  {c:"Sports & Games",d:"Medium",w:"Kushti"},{c:"Sports & Games",d:"Medium",w:"Mallakhamb"},
+  {c:"Sports & Games",d:"Hard",w:"Sepak Takraw"},{c:"Sports & Games",d:"Hard",w:"Capoeira"},
+  {c:"Sports & Games",d:"Hard",w:"Orienteering"},
+  /* Indian Hard */
+  {c:"Sports & Games",d:"Hard",w:"Kalaripayattu"},
+  {c:"Sports & Games",d:"Hard",w:"Silambam"},
+  {c:"Sports & Games",d:"Hard",w:"Gatka"},
+
+  /* ── SUPERPOWERS ── */
+  {c:"Superpowers",d:"Easy",w:"Flying"},{c:"Superpowers",d:"Easy",w:"Invisibility"},
+  {c:"Superpowers",d:"Easy",w:"Super Strength"},{c:"Superpowers",d:"Easy",w:"Time Travel"},
+  {c:"Superpowers",d:"Easy",w:"Teleportation"},{c:"Superpowers",d:"Easy",w:"Mind Reading"},
+  {c:"Superpowers",d:"Easy",w:"Fire"},{c:"Superpowers",d:"Easy",w:"Ice Powers"},
+  {c:"Superpowers",d:"Easy",w:"Lightning"},{c:"Superpowers",d:"Easy",w:"Healing"},
+  {c:"Superpowers",d:"Medium",w:"Telekinesis"},{c:"Superpowers",d:"Medium",w:"Shape-Shifting"},
+  {c:"Superpowers",d:"Medium",w:"Precognition"},
+  {c:"Superpowers",d:"Hard",w:"Omniscience"},{c:"Superpowers",d:"Hard",w:"Phasing"},
+
+  /* ── TECHNOLOGY ── */
+  {c:"Technology & Gadgets",d:"Easy",w:"Phone"},{c:"Technology & Gadgets",d:"Easy",w:"Laptop"},
+  {c:"Technology & Gadgets",d:"Easy",w:"TV"},{c:"Technology & Gadgets",d:"Easy",w:"Headphones"},
+  {c:"Technology & Gadgets",d:"Easy",w:"Camera"},{c:"Technology & Gadgets",d:"Easy",w:"Tablet"},
+  {c:"Technology & Gadgets",d:"Easy",w:"Keyboard"},{c:"Technology & Gadgets",d:"Easy",w:"Watch"},
+  {c:"Technology & Gadgets",d:"Easy",w:"Game Console"},{c:"Technology & Gadgets",d:"Easy",w:"Smartwatch"},
+  {c:"Technology & Gadgets",d:"Easy",w:"Speaker"},{c:"Technology & Gadgets",d:"Easy",w:"Charger"},
+  {c:"Technology & Gadgets",d:"Easy",w:"Power Bank"},{c:"Technology & Gadgets",d:"Easy",w:"Earbuds"},
+  {c:"Technology & Gadgets",d:"Medium",w:"3D Printer"},{c:"Technology & Gadgets",d:"Medium",w:"Graphics Card"},
+  {c:"Technology & Gadgets",d:"Medium",w:"CPU"},{c:"Technology & Gadgets",d:"Medium",w:"Motherboard"},
+  {c:"Technology & Gadgets",d:"Medium",w:"RAM"},{c:"Technology & Gadgets",d:"Medium",w:"Bluetooth"},
+  {c:"Technology & Gadgets",d:"Medium",w:"Wi-Fi"},
+  {c:"Technology & Gadgets",d:"Hard",w:"Neural Network"},
+  {c:"Technology & Gadgets",d:"Hard",w:"Blockchain"},
+  {c:"Technology & Gadgets",d:"Hard",w:"Quantum Computer"},
+
+  /* ── VEHICLES ── */
+  {c:"Vehicles & Transportation",d:"Easy",w:"Car"},{c:"Vehicles & Transportation",d:"Easy",w:"Bus"},
+  {c:"Vehicles & Transportation",d:"Easy",w:"Bike"},{c:"Vehicles & Transportation",d:"Easy",w:"Boat"},
+  {c:"Vehicles & Transportation",d:"Easy",w:"Truck"},{c:"Vehicles & Transportation",d:"Easy",w:"Train"},
+  {c:"Vehicles & Transportation",d:"Easy",w:"Plane"},{c:"Vehicles & Transportation",d:"Easy",w:"Taxi"},
+  {c:"Vehicles & Transportation",d:"Easy",w:"Scooter"},{c:"Vehicles & Transportation",d:"Easy",w:"Helicopter"},
+  {c:"Vehicles & Transportation",d:"Easy",w:"Motorcycle"},{c:"Vehicles & Transportation",d:"Easy",w:"Tractor"},
+  {c:"Vehicles & Transportation",d:"Easy",w:"Ambulance"},{c:"Vehicles & Transportation",d:"Easy",w:"Fire Truck"},
+  /* Indian Easy */
+  {c:"Vehicles & Transportation",d:"Easy",w:"Auto-Rickshaw"},
+  {c:"Vehicles & Transportation",d:"Easy",w:"Bullock Cart"},
+  {c:"Vehicles & Transportation",d:"Easy",w:"Cycle-Rickshaw"},
+  {c:"Vehicles & Transportation",d:"Medium",w:"Hot Air Balloon"},
+  {c:"Vehicles & Transportation",d:"Medium",w:"Hovercraft"},
+  {c:"Vehicles & Transportation",d:"Medium",w:"Yacht"},{c:"Vehicles & Transportation",d:"Medium",w:"Cable Car"},
+  {c:"Vehicles & Transportation",d:"Medium",w:"Vande Bharat"},
+  {c:"Vehicles & Transportation",d:"Hard",w:"Hydrofoil"},
+  {c:"Vehicles & Transportation",d:"Hard",w:"Maglev"},
+  {c:"Vehicles & Transportation",d:"Hard",w:"Catamaran"},
+
+  /* ── VIDEO GAMES & INTERNET ── */
+  {c:"Video Games & Internet",d:"Easy",w:"Mario"},{c:"Video Games & Internet",d:"Easy",w:"Minecraft"},
+  {c:"Video Games & Internet",d:"Easy",w:"Fortnite"},{c:"Video Games & Internet",d:"Easy",w:"Among Us"},
+  {c:"Video Games & Internet",d:"Easy",w:"Roblox"},{c:"Video Games & Internet",d:"Easy",w:"Pokemon"},
+  {c:"Video Games & Internet",d:"Easy",w:"Sonic"},{c:"Video Games & Internet",d:"Easy",w:"Tetris"},
+  {c:"Video Games & Internet",d:"Easy",w:"Candy Crush"},{c:"Video Games & Internet",d:"Easy",w:"Temple Run"},
+  {c:"Video Games & Internet",d:"Easy",w:"Subway Surfers"},{c:"Video Games & Internet",d:"Easy",w:"Clash of Clans"},
+  {c:"Video Games & Internet",d:"Easy",w:"Animal Crossing"},{c:"Video Games & Internet",d:"Easy",w:"Mario Kart"},
+  /* Indian Easy */
+  {c:"Video Games & Internet",d:"Easy",w:"BGMI"},
+  {c:"Video Games & Internet",d:"Easy",w:"Free Fire"},
+  {c:"Video Games & Internet",d:"Medium",w:"Skyrim"},{c:"Video Games & Internet",d:"Medium",w:"Valorant"},
+  {c:"Video Games & Internet",d:"Medium",w:"Apex Legends"},{c:"Video Games & Internet",d:"Medium",w:"League of Legends"},
+  {c:"Video Games & Internet",d:"Medium",w:"Overwatch"},{c:"Video Games & Internet",d:"Medium",w:"Street Fighter"},
+  {c:"Video Games & Internet",d:"Medium",w:"Speedrun"},{c:"Video Games & Internet",d:"Medium",w:"Rickroll"},
+  {c:"Video Games & Internet",d:"Hard",w:"Metroidvania"},{c:"Video Games & Internet",d:"Hard",w:"Roguelike"},
+  {c:"Video Games & Internet",d:"Hard",w:"Permadeath"},{c:"Video Games & Internet",d:"Hard",w:"Konami Code"},
+  {c:"Video Games & Internet",d:"Hard",w:"Gacha"},{c:"Video Games & Internet",d:"Hard",w:"Loot Box"},
+];
+
+/* ================================================================
+   STATE
+================================================================ */
+const ALL_CATS = [...new Set(WORDS.map(w => w.c))];
+
+let S = {
+  screen: 'home',
+  numPlayers: 4,
+  numImposters: 1,
+  selDiffs: ['Easy','Medium','Hard'],   // multi-select difficulty
+  selCats: [...ALL_CATS],
+  catHint: false,                        // show category to all players
+  curPlayer: 0,
+  imposterIdxs: [],
+  secretWord: null,
+  wordVisible: false,
+};
+
+/* ================================================================
+   HELPERS
+================================================================ */
+function shuffle(a) {
+  const b = [...a];
+  for (let i = b.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [b[i],b[j]] = [b[j],b[i]];
+  }
+  return b;
+}
+
+function pickWord() {
+  let pool = WORDS.filter(w => S.selCats.includes(w.c) && S.selDiffs.includes(w.d));
+  if (!pool.length) pool = WORDS.filter(w => S.selCats.includes(w.c));
+  if (!pool.length) pool = WORDS;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+function startGame() {
+  S.secretWord   = pickWord();
+  S.imposterIdxs = shuffle(Array.from({length:S.numPlayers},(_,i)=>i)).slice(0,S.numImposters);
+  S.curPlayer    = 0;
+  S.wordVisible  = false;
+  S.screen       = 'distribute';
+  render();
+}
+
+/* ================================================================
+   TINY DOM BUILDER
+================================================================ */
+function el(tag, p, ...kids) {
+  const e = document.createElement(tag);
+  if (p) for (const [k,v] of Object.entries(p)) {
+    if (k==='className') e.className = v;
+    else if (k==='style') Object.assign(e.style,v);
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2).toLowerCase(),v);
+    else if (k==='html') e.innerHTML = v;
+    else e.setAttribute(k,v);
+  }
+  kids.flat().forEach(c => { if(c==null)return; e.appendChild(typeof c==='string'?document.createTextNode(c):c); });
+  return e;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  ({home:renderHome,settings:renderSettings,distribute:renderDistribute,play:renderPlay,result:renderResult}[S.screen]||renderHome)()
+    .forEach ? null : app.appendChild(({home:renderHome,settings:renderSettings,distribute:renderDistribute,play:renderPlay,result:renderResult}[S.screen]||renderHome)());
+}
+// Simpler:
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  const map = {home:renderHome,settings:renderSettings,distribute:renderDistribute,play:renderPlay,result:renderResult};
+  app.appendChild((map[S.screen]||renderHome)());
+}
+
+/* ================================================================
+   HOME
+================================================================ */
+function renderHome() {
+  const wrap = el('div',{className:'anim-in'});
+
+  const hdr = el('div',{className:'app-header'});
+  hdr.appendChild(el('h1',{},'🕵️ Imposter Game'));
+  hdr.appendChild(el('p',{className:'tagline'},'Indian Edition · Free Forever · No Login Needed'));
+  wrap.appendChild(hdr);
+
+  const cont = el('div',{className:'container'});
+
+  const how = el('div',{className:'card-dark'});
+  how.appendChild(el('div',{className:'card-title'},'🎮 How to Play'));
+  const ol = el('ol',{className:'how-list'});
+  ['Everyone gets the <strong>secret word</strong> — except the Imposter who sees <strong>???</strong>',
+   'Take turns giving a <strong>1-word clue</strong>. Don\'t be too obvious!',
+   'Discuss and <strong>vote</strong> to find the Imposter.',
+   'Imposter wins if not caught — or if they guess the word!'
+  ].forEach(t => ol.appendChild(el('li',{html:t})));
+  how.appendChild(ol);
+  cont.appendChild(how);
+
+  cont.appendChild(el('div',{style:{height:'8px'}}));
+  cont.appendChild(el('button',{className:'btn btn-primary',onClick:startGame},'🚀 Start Game'));
+  cont.appendChild(el('div',{style:{height:'8px'}}));
+  cont.appendChild(el('button',{className:'btn btn-ghost',onClick:()=>{S.screen='settings';render();}},'⚙️ Settings & Categories'));
+  cont.appendChild(el('p',{className:'footer-note'},'✅ 100% Free · No Ads · No Account Needed'));
+  wrap.appendChild(cont);
+  return wrap;
+}
+
+/* ================================================================
+   SETTINGS
+================================================================ */
+function renderSettings() {
+  const wrap = el('div',{className:'anim-in'});
+
+  const hdr = el('div',{className:'app-header'});
+  hdr.appendChild(el('h1',{style:{fontSize:'1.9rem'}},'⚙️ Settings'));
+  hdr.appendChild(el('p',{className:'tagline'},'Customize your game'));
+  wrap.appendChild(hdr);
+
+  const cont = el('div',{className:'container'});
+
+  /* Players & Imposters */
+  const pCard = el('div',{className:'card'});
+  pCard.appendChild(el('div',{className:'card-title'},'👥 Players'));
+
+  const pRow = el('div',{className:'counter-row'});
+  pRow.appendChild(el('span',{className:'counter-label'},'Number of Players'));
+  const pCtrl = el('div',{className:'counter-controls'});
+  pCtrl.appendChild(el('button',{className:'counter-btn',onClick:()=>{if(S.numPlayers>3){S.numPlayers--;if(S.numImposters>=S.numPlayers)S.numImposters=S.numPlayers-1;render();}}},'-'));
+  pCtrl.appendChild(el('span',{className:'counter-val'},String(S.numPlayers)));
+  pCtrl.appendChild(el('button',{className:'counter-btn',onClick:()=>{if(S.numPlayers<12){S.numPlayers++;render();}}},'+'));
+  pRow.appendChild(pCtrl);
+  pCard.appendChild(pRow);
+  pCard.appendChild(el('div',{className:'divider'}));
+
+  const iRow = el('div',{className:'counter-row'});
+  iRow.appendChild(el('span',{className:'counter-label'},'😈 Imposters'));
+  const iCtrl = el('div',{className:'counter-controls'});
+  iCtrl.appendChild(el('button',{className:'counter-btn',onClick:()=>{if(S.numImposters>1){S.numImposters--;render();}}},'-'));
+  iCtrl.appendChild(el('span',{className:'counter-val'},String(S.numImposters)));
+  iCtrl.appendChild(el('button',{className:'counter-btn',onClick:()=>{if(S.numImposters<Math.floor(S.numPlayers/2)){S.numImposters++;render();}}},'+'));
+  iRow.appendChild(iCtrl);
+  pCard.appendChild(iRow);
+  cont.appendChild(pCard);
+
+  /* Difficulty (multi-select checkboxes) */
+  const dCard = el('div',{className:'card'});
+  dCard.appendChild(el('div',{className:'card-title'},'⚡ Difficulty — Select All You Want'));
+
+  const dRow = el('div',{className:'diff-check-row'});
+  [['Easy','😊 Easy','easy'],['Medium','🔥 Medium','medium'],['Hard','💀 Hard','hard']].forEach(([val,lbl,cls]) => {
+    const on = S.selDiffs.includes(val);
+    dRow.appendChild(el('button',{
+      className:`diff-check-btn ${cls}${on?' selected':''}`,
+      onClick:()=>{
+        if(on){ if(S.selDiffs.length>1) S.selDiffs=S.selDiffs.filter(d=>d!==val); }
+        else S.selDiffs.push(val);
+        render();
+      }
+    }, lbl));
+  });
+  dCard.appendChild(dRow);
+
+  const warn = el('div',{className:`diff-check-warn${S.selDiffs.length===0?' show':''}` },'⚠ Select at least one difficulty.');
+  dCard.appendChild(warn);
+  cont.appendChild(dCard);
+
+  /* Category Hint toggle */
+  const hintCard = el('div',{className:'card'});
+  hintCard.appendChild(el('div',{className:'card-title'},'💡 Options'));
+  const tRow = el('div',{className:'toggle-row'});
+  const tlw = el('div',{className:'toggle-label-wrap'});
+  tlw.appendChild(el('span',{className:'toggle-label'},'Category Hint'));
+  tlw.appendChild(el('span',{className:'toggle-sub'},'Show the category to all players (including the imposter)'));
+  tRow.appendChild(tlw);
+  const tog = el('label',{className:'toggle'});
+  const inp = el('input',{type:'checkbox'});
+  if(S.catHint) inp.checked = true;
+  inp.addEventListener('change',()=>{ S.catHint=inp.checked; });
+  tog.appendChild(inp);
+  tog.appendChild(el('span',{className:'toggle-slider'}));
+  tRow.appendChild(tog);
+  hintCard.appendChild(tRow);
+  cont.appendChild(hintCard);
+
+  /* Categories */
+  const cCard = el('div',{className:'card'});
+  const sr = el('div',{className:'sel-row'});
+  sr.appendChild(el('div',{className:'card-title',style:{margin:0}},'📚 Word Categories'));
+  const allOn = S.selCats.length === ALL_CATS.length;
+  sr.appendChild(el('button',{className:'link-btn',onClick:()=>{S.selCats=allOn?[ALL_CATS[0]]:[...ALL_CATS];render();}}, allOn?'Deselect All':'Select All'));
+  cCard.appendChild(sr);
+
+  const pg = el('div',{className:'pill-grid'});
+  ALL_CATS.forEach(cat => {
+    const on = S.selCats.includes(cat);
+    pg.appendChild(el('button',{
+      className:`pill ${on?'pill-on':'pill-off'}`,
+      onClick:()=>{
+        if(on){ if(S.selCats.length>1) S.selCats=S.selCats.filter(c=>c!==cat); }
+        else S.selCats.push(cat);
+        render();
+      }
+    }, (on?'✓ ':'')+cat));
+  });
+  cCard.appendChild(pg);
+  cont.appendChild(cCard);
+
+  cont.appendChild(el('div',{style:{height:'8px'}}));
+  cont.appendChild(el('button',{className:'btn btn-green',onClick:startGame},'🎯 Start Game!'));
+  cont.appendChild(el('div',{style:{height:'8px'}}));
+  cont.appendChild(el('button',{className:'btn btn-ghost',onClick:()=>{S.screen='home';render();}},'← Back'));
+  wrap.appendChild(cont);
+  return wrap;
+}
+
+/* ================================================================
+   DISTRIBUTE
+================================================================ */
+function renderDistribute() {
+  const wrap = el('div',{className:'anim-in'});
+  const hdr = el('div',{className:'app-header'});
+
+  const dots = el('div',{className:'progress-dots',style:{marginBottom:'14px'}});
+  for(let i=0;i<S.numPlayers;i++){
+    dots.appendChild(el('div',{className:'dot'+(i<S.curPlayer?' dot-done':i===S.curPlayer?' dot-active':'')}));
+  }
+  hdr.appendChild(dots);
+
+  const badge = el('div',{style:{textAlign:'center',marginBottom:'8px'}});
+  badge.appendChild(el('span',{className:'player-badge'},`👤 Player ${S.curPlayer+1}`));
+  hdr.appendChild(badge);
+  hdr.appendChild(el('h1',{style:{fontSize:'1.7rem'}},"Your turn to look"));
+  hdr.appendChild(el('p',{className:'tagline'},"Don't show anyone else!"));
+  wrap.appendChild(hdr);
+
+  const cont = el('div',{className:'container'});
+
+  if(!S.wordVisible) {
+    const card = el('div',{className:'word-reveal-card',onClick:()=>{S.wordVisible=true;render();}});
+    card.appendChild(el('span',{style:{fontSize:'3.5rem'}},'🔒'));
+    card.appendChild(el('div',{className:'word-big',style:{marginTop:'12px',color:'rgba(255,255,255,0.85)'}},'Tap to reveal'));
+    card.appendChild(el('div',{className:'tap-hint'},`Only Player ${S.curPlayer+1} should look`));
+    cont.appendChild(card);
+  } else {
+    const isImp = S.imposterIdxs.includes(S.curPlayer);
+    const card = el('div',{className:`word-reveal-card${isImp?' imposter-card':''}`});
+
+    if(isImp){
+      // Category hint for imposter too if enabled
+      if(S.catHint){
+        card.appendChild(el('div',{className:'word-cat-badge hint-show'},`📚 ${S.secretWord.c}`));
+      }
+      card.appendChild(el('span',{style:{fontSize:'3.5rem'}},'😈'));
+      card.appendChild(el('div',{className:'word-imposter',style:{marginTop:'10px'}},'???'));
+      card.appendChild(el('div',{className:'tap-hint',style:{marginTop:'12px'}},'You are the IMPOSTER — blend in! 🎭'));
+    } else {
+      if(S.catHint){
+        card.appendChild(el('div',{className:'word-cat-badge'},`📚 ${S.secretWord.c}`));
+      }
+      card.appendChild(el('div',{className:'word-big'},S.secretWord.w));
+      card.appendChild(el('div',{className:'tap-hint',style:{marginTop:'12px'}},'Remember this word! 🧠'));
+    }
+    cont.appendChild(card);
+    cont.appendChild(el('div',{style:{height:'16px'}}));
+
+    const isLast = S.curPlayer===S.numPlayers-1;
+    cont.appendChild(el('button',{
+      className: isLast?'btn btn-green':'btn btn-primary',
+      onClick:()=>{
+        if(!isLast){S.curPlayer++;S.wordVisible=false;render();}
+        else{S.screen='play';render();}
+      }
+    }, isLast?'✅ Everyone is ready — Start!': `Pass to Player ${S.curPlayer+2} →`));
+  }
+
+  wrap.appendChild(cont);
+  return wrap;
+}
+
+/* ================================================================
+   PLAY
+================================================================ */
+function renderPlay() {
+  const wrap = el('div',{className:'anim-in'});
+
+  const hdr = el('div',{className:'app-header'});
+  hdr.appendChild(el('span',{className:'emoji-big'},'🕵️'));
+  hdr.appendChild(el('h1',{style:{fontSize:'1.9rem'}},'Clue Time!'));
+  hdr.appendChild(el('p',{className:'tagline'},'Each player gives a 1-word clue. The imposter is listening…'));
+  wrap.appendChild(hdr);
+
+  const cont = el('div',{className:'container'});
+
+  const statsRow = el('div',{className:'flex-row',style:{marginBottom:'12px'}});
+  [{icon:'👥',lbl:'Players',val:S.numPlayers},{icon:'😈',lbl:'Imposters',val:S.numImposters}].forEach(s=>{
+    const b = el('div',{className:'stat-box'});
+    b.appendChild(el('div',{style:{fontSize:'1.5rem'}},s.icon));
+    b.appendChild(el('div',{className:'stat-val'},String(s.val)));
+    b.appendChild(el('div',{className:'stat-lbl'},s.lbl));
+    statsRow.appendChild(b);
+  });
+  // Category hint stat box
+  if(S.catHint){
+    const b = el('div',{className:'stat-box'});
+    b.appendChild(el('div',{style:{fontSize:'1.5rem'}},'📚'));
+    b.appendChild(el('div',{className:'stat-val',style:{fontSize:'0.9rem',lineHeight:'1.3'}},S.secretWord.c));
+    b.appendChild(el('div',{className:'stat-lbl'},'Category'));
+    statsRow.appendChild(b);
+  }
+  cont.appendChild(statsRow);
+
+  const rules = el('div',{className:'card-dark'});
+  rules.appendChild(el('div',{className:'card-title'},'📋 Reminder'));
+  const ol = el('ol',{className:'how-list'});
+  ['Each player says ONE word as a clue — don\'t say the secret word!',
+   'Don\'t be too obvious, the imposter is trying to blend in',
+   'After all clues, discuss who you think is the Imposter',
+   'Vote — if the Imposter is not caught, they win!'
+  ].forEach(t=>ol.appendChild(el('li',{html:t})));
+  rules.appendChild(ol);
+  cont.appendChild(rules);
+
+  cont.appendChild(el('div',{style:{height:'10px'}}));
+  cont.appendChild(el('button',{className:'btn btn-red',onClick:()=>{S.screen='result';render();}},'🎲 Reveal the Word!'));
+  cont.appendChild(el('div',{style:{height:'8px'}}));
+  cont.appendChild(el('button',{className:'btn btn-ghost',onClick:startGame},'🔄 New Round'));
+  cont.appendChild(el('div',{style:{height:'8px'}}));
+  cont.appendChild(el('button',{className:'btn btn-ghost',onClick:()=>{S.screen='settings';render();}},'⚙️ Change Settings'));
+
+  wrap.appendChild(cont);
+  return wrap;
+}
+
+/* ================================================================
+   RESULT
+================================================================ */
+function renderResult() {
+  const wrap = el('div',{className:'anim-in'});
+
+  const hdr = el('div',{className:'app-header'});
+  hdr.appendChild(el('span',{className:'emoji-big pop-in'},'🎉'));
+  hdr.appendChild(el('h1',{style:{fontSize:'1.5rem',marginBottom:'4px'}},'The secret word was…'));
+  hdr.appendChild(el('div',{className:'result-word-big',style:{marginBottom:'6px'}},S.secretWord.w));
+  hdr.appendChild(el('p',{className:'tagline'},`${S.secretWord.c} · ${S.secretWord.d}`));
+  wrap.appendChild(hdr);
+
+  const cont = el('div',{className:'container'});
+
+  const impCard = el('div',{className:'card-dark',style:{marginBottom:'14px'}});
+  impCard.appendChild(el('div',{className:'card-title'},'😈 The Imposter(s)'));
+  impCard.appendChild(el('div',{style:{fontSize:'1.6rem',fontWeight:'800',marginBottom:'6px'}},
+    S.imposterIdxs.map(i=>`Player ${i+1}`).join(', ')));
+  impCard.appendChild(el('div',{style:{fontSize:'0.85rem',color:'rgba(255,255,255,0.45)'}},'Did you catch them? 🔍'));
+  cont.appendChild(impCard);
+
+  cont.appendChild(el('button',{className:'btn btn-green',style:{marginBottom:'8px'},onClick:startGame},'🔄 Play Again'));
+  cont.appendChild(el('button',{className:'btn btn-primary',style:{marginBottom:'8px'},onClick:()=>{S.screen='settings';render();}},'⚙️ Change Settings'));
+  cont.appendChild(el('button',{className:'btn btn-ghost',onClick:()=>{S.screen='home';render();}},'🏠 Home'));
+
+  wrap.appendChild(cont);
+  return wrap;
+}
+
+render();
+</script>
+</body>
+</html>
